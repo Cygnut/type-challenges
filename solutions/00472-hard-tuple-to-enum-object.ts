@@ -82,8 +82,6 @@ type Reduce<Array extends object[], _Result extends object = {}> =
 type Enum<T extends readonly string[], N extends boolean = false> 
   = Readonly<Reduce<Map<T, N>>>
 
-type x = Enum<typeof OperatingSystem>
-
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'
 
