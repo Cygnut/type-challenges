@@ -1,0 +1,96 @@
+/*
+  1383 - Camelize
+  -------
+  by Denis (@denchiklut) #hard #union #recursion
+  
+  ### Question
+  
+  Implement Camelize which converts object from snake_case to to camelCase
+  
+  ```ts
+  Camelize<{
+    some_prop: string, 
+    prop: { another_prop: string },
+    array: [{ snake_case: string }]
+  }>
+  
+  // expected to be
+  // {
+  //   someProp: string, 
+  //   prop: { anotherProp: string },
+  //   array: [{ snakeCase: string }]
+  // }
+  ```
+  
+  > View on GitHub: https://tsch.js.org/1383
+*/
+
+
+/* _____________ Your Code Here _____________ */
+
+// First let's write something that can convert from snake_case to camelCase - note that these utilities
+// are pretty curried and not very generic - but we've done those in other challenges!
+
+type Split<String extends string, Array extends string[] = []> = 
+  String extends `${infer Left}_${infer Rest}` 
+    ? Split<Rest, [...Array, Left]>
+    : [...Array, String]
+
+type CamelizeStringArray<Array extends readonly string[], String extends string = ''> = 
+  Array extends [infer Left extends string, ...infer Rest extends string[]]
+    ? CamelizeStringArray<Rest, String extends '' ? `${Left}` : `${String}${Capitalize<Left>}`>
+    : Uncapitalize<String>
+
+type CamelizeString<String extends string> = CamelizeStringArray<Split<String>>
+
+// Now after all that, we can re-map all properties for object types recursively
+
+type CamelizeArray<Array extends readonly any[], Camelized extends any[] = []> = 
+  Array extends [infer U, ...infer V] 
+    ? CamelizeArray<V, [...Camelized, Camelize<U>]> 
+    : Camelized
+
+type Camelize<Object> = {
+  [P in keyof Object & string as `${CamelizeString<P>}`]: 
+    Object[P] extends any[]
+      ? CamelizeArray<Object[P]>
+      : Object[P] extends object
+        ? Camelize<Object[P]>
+        : Object[P]
+}
+
+/* _____________ Test Cases _____________ */
+import type { Equal, Expect } from '@type-challenges/utils'
+
+type cases = [
+  Expect<Equal<
+    Camelize<{
+      some_prop: string
+      prop: { another_prop: string }
+      array: [
+        { snake_case: string },
+        { another_element: { yet_another_prop: string } },
+        { yet_another_element: string },
+      ]
+    }>,
+    {
+      someProp: string
+      prop: { anotherProp: string }
+      array: [
+        { snakeCase: string },
+        { anotherElement: { yetAnotherProp: string } },
+        { yetAnotherElement: string },
+      ]
+    }
+  >>,
+]
+
+
+
+/* _____________ Further Steps _____________ */
+/*
+  > Share your solutions: https://tsch.js.org/1383/answer
+  > View solutions: https://tsch.js.org/1383/solutions
+  > More Challenges: https://tsch.js.org
+*/
+
