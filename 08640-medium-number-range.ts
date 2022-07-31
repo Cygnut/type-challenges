@@ -17,24 +17,29 @@
 
 /* _____________ Your Code Here _____________ */
 
+// Note that in the following, they key challenge is avoiding triggering Typescipts heuristics
+// for excessive recursion - due to the size of the input (i.e. test #3). This means ensuring 
+// all of the types we write make use of tail-call optimisation, which is now supported - allowing
+// for far deeper recursion without hitting the heuristic cap producing:
+//   'Type instantiation is excessively deep and possibly infinite'
+
+// Map a number to an tuple of that length
 type ToArray<Number extends number, _Result extends any[] = []> =
   _Result extends { length: Number }
     ? _Result
     : ToArray<Number, [..._Result, any]>
 
+// Extract the length of a tuple
 type Length<A extends any[]> = A['length'] extends number ? A['length'] : never
 
+// Increment a numeric literal
 type Increment<A extends number> = Length<[...ToArray<A>, any]>
 
-type Range<L extends number, H extends number, _Result extends any[] = []> = 
+// Build a tuple of the required format
+type NumberRange<L extends number, H extends number, _Result extends any[] = []> = 
   L extends H
-    ? _Result
-    : Range<Increment<L>, H, [..._Result, L]>
-
-
-type NumberRange<L extends number, H extends number> = Range<L, H>[number]
-
-type x = NumberRange<2, 9>
+    ? [..._Result, L][number]
+    : NumberRange<Increment<L>, H, [..._Result, L]>
 
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'
@@ -58,7 +63,7 @@ type Result3 =
 type cases = [
   Expect<Equal<NumberRange<2, 9>, Result1>>,
   Expect<Equal<NumberRange<0, 2>, Result2>>,
-  Expect<Equal<NumberRange<0, 140>, Result3>>,
+  Expect<Equal<NumberRange<0, 140>, Result3>>
 ]
 
 
