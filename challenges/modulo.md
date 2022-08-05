@@ -53,3 +53,23 @@ type cases = [
   Expect<Equal<Modulo<35, 10>, 5>>
 ]
 ```
+## Sample Solution
+
+```ts
+type ToArray<N extends number, _Result extends number[] = []> =
+  _Result extends { length: N }
+  ? _Result
+  : ToArray<N, [..._Result, any]>;
+
+type Subtract<A extends any[], B extends any[]> =
+  A extends [...infer C, ...B]
+  ? C
+  : never;
+
+type ModulusOfArray<A extends any[], N extends any[]> =
+  Subtract<A, N> extends never
+  ? A['length']
+  : ModulusOfArray<Subtract<A, N>, N>;
+
+type Modulus<A extends number, N extends number> = ModulusOfArray<ToArray<A>, ToArray<N>>;
+```
