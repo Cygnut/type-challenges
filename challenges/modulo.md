@@ -14,6 +14,8 @@ tags: array, math, infer
 
 ## Question
 
+<!--question-start-->
+
 Javascript and a lot of other programming languages support the modulo (also know as remainder) operator `%` which returns the remainder when an integer is divided by another integer. For Javascript's implementation - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder.
 
 Here's some examples:
@@ -25,6 +27,8 @@ Here's some examples:
 ```
 
 You do not need to worry about the case when the left or right hand sides are negative.
+
+<!--question-end-->
 
 ## Template
 
@@ -40,13 +44,12 @@ Provide some test cases for your challenge, you can use some utils from `@type-c
 
 ```ts
 import type { Equal, Expect } from '@type-challenges/utils'
-import { ExpectFalse, NotEqual } from '@type-challenges/utils'
 
 type cases = [
   Expect<Equal<Modulo<5, 4>, 1>>,
   Expect<Equal<Modulo<9, 4>, 1>>,
   Expect<Equal<Modulo<16, 2>, 0>>,
-  Expect<Equal<Modulo<35, 1>, 1>>,
+  Expect<Equal<Modulo<35, 1>, 0>>,
   Expect<Equal<Modulo<35, 10>, 5>>
 ]
 ```
