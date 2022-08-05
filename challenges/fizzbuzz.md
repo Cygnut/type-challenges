@@ -176,3 +176,50 @@ type cases = [
   ]>>
 ]
 ```
+
+## Sample Solution
+
+```ts
+type ToArray<N extends number, _Result extends number[] = []> =
+  _Result extends { length: N }
+  ? _Result
+  : ToArray<N, [..._Result, any]>;
+
+type Subtract<A extends any[], B extends any[]> =
+  A extends [...infer C, ...B]
+  ? C
+  : never;
+
+type ModulusOfArray<A extends any[], N extends any[]> =
+  Subtract<A, N> extends never
+  ? A['length']
+  : ModulusOfArray<Subtract<A, N>, N>;
+
+type Modulus<A extends number, N extends number> = ModulusOfArray<ToArray<A>, ToArray<N>>;
+
+type Divides<A extends number, N extends number> = Modulus<A, N> extends 0 ? true : false;
+
+type Join<A extends string[], _Result extends string = ''>
+  = A extends [infer First extends string, ...infer Rest extends string[]]
+  ? Join<Rest, `${_Result}${First}`>
+  : _Result;
+
+type Increment<N extends number> =
+  [...ToArray<N>, any]['length'] extends infer I extends number
+  ? I
+  : never;
+
+type Coalesce<A extends string, B extends string> = A extends '' ? B : A;
+
+type FizzBuzzOfNumber<N extends number> = Coalesce<Join<[
+  Divides<N, 3> extends true ? 'Fizz' : '',
+  Divides<N, 5> extends true ? 'Buzz' : ''
+]>, `${N}`>;
+
+type FizzBuzzOfArray<N extends any[], _Result extends string[] = []> =
+  _Result['length'] extends N['length']
+  ? _Result
+  : FizzBuzzOfArray<N, [..._Result, FizzBuzzOfNumber<Increment<_Result['length']>>]>;
+
+type FizzBuzz<N extends number> = FizzBuzzOfArray<ToArray<N>>;
+```
